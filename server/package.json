@@ -17,7 +17,7 @@
     "http": "^0.0.1-security",
     "http-proxy-agent": "^7.0.0",
     "https-proxy-agent": "^7.0.2",
-    "mongoose": "^5.12.1",
+    "mongoose": "^5.13.20",
     "nodemon": "^2.0.22"
   }
 }
