@@ -9,7 +9,7 @@ import signal
 app = Flask(__name__)
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
-CORS(app, resources={r"/*": {"origins": ["http://localhost:3000", "http://127.0.0.1:3000", "http://127.0.0.1:5000", "http://127.0.0.1:8000", "http://localhost:8000", "http://node-server:8000"]}})  # Enable CORS for specified origins
+CORS(app, resources={r"/*": {"origins": ["http://localhost:3000", "http://127.0.0.1:3000", "http://127.0.0.1:8000", "http://localhost:8000", "http://node-server:8000"]}})  # Enable CORS for specified origins
 
 class Scan:
     def __init__(self):
