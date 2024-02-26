@@ -15,51 +15,53 @@ services:
     depends_on:
       - ars0n-mongodb
     ports:
-      - '127.0.0.1:8000:8000'
+      - "8000:8000"
+    hostname: node-server
 
   ars0n-client:
     <<: *defaults
     build:
       dockerfile: ./Docker/Dockerfile.client
     ports:
-      - '3000:3000'
+      - "3000:3000"
 
   ars0n-toolkit:
     <<: *defaults
     build:
       dockerfile: ./Docker/Dockerfile.toolkit
     env_file:
-      - .env 
+      - .env
     ports:
-      - '127.0.0.1:5000:5000'
+      - "5000:5000"
+    hostname: toolkit-server
     volumes:
       - ./configs/toolkit:/configs
 
   ars0n-mongodb:
     <<: *defaults
     image: mongo:latest
+    hostname: mongodb-server
     ports:
-      - '127.0.0.1:27017:27017'
+      - "27017:27017"
     volumes:
       - mongodb_data:/data/db
       - ./configs/Docker/mongod.conf:/etc/mongo/mongod.conf
       - ./data/logs/mongodb:/var/log/mongodb/
     # command: ["mongod", "--config", "/etc/mongo/mongod.conf"]
 
-
-
-# DVWA - Damn Vulerable Web Application - You can uncomment it and use it to test the UI and the tools. 
-# Just enter localhost:4280 as target domain - some tools will naturally fail since they expect https and others.
-# We might add a real working lab with https and subdomains etc. at some stage.  BIG THANKS TO https://github.com/digininja/DVWA
+  # DVWA - Damn Vulerable Web Application - You can uncomment it and use it to test the UI and the tools.
+  # Just enter localhost:4280 as target domain - some tools will naturally fail since they expect https and others.
+  # We might add a real working lab with https and subdomains etc. at some stage.  BIG THANKS TO https://github.com/digininja/DVWA
   # dvwa:
-  #     image: ghcr.io/digininja/dvwa:latest
-  #     environment:
-  #       - DB_SERVER=dvwa-mariadb
-  #     depends_on:
-  #       - dvwa-mariadb
-  #     ports:
-  #       - 127.0.0.1:4280:80
-  #     restart: unless-stopped
+  #   image: ghcr.io/digininja/dvwa:latest
+  #   environment:
+  #     - DB_SERVER=dvwa-mariadb
+  #   depends_on:
+  #     - dvwa-mariadb
+  #   ports:
+  #     - 4280:80
+  #   hostname: dvwa-server
+  #   restart: unless-stopped
 
   # dvwa-mariadb:
   #   image: docker.io/library/mariadb:latest
@@ -71,7 +73,6 @@ services:
   #   volumes:
   #     - dvwa:/var/lib/mysql
   #   restart: unless-stopped
-
 
 volumes:
   mongodb_data:

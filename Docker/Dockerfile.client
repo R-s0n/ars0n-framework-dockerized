@@ -32,5 +32,4 @@ WORKDIR $HOME/client
 RUN npm install --omit=dev
 
 
-CMD ["sleep", "1000"]
 CMD ["npm", "run", "start", "--silent"]
