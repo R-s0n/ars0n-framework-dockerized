@@ -70,7 +70,8 @@ class NetworkValidator:
             self.vpn_connected = False
 
 def get_home_dir():
-    home_dir = "/home/ars0n"
+    get_home_dir = subprocess.run(["echo $HOME"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True, shell=True)
+    home_dir = get_home_dir.stdout.replace("\n", "")
     return home_dir
 
 def get_fqdn_list(args):
@@ -97,7 +98,7 @@ def masscan_install():
         print("[+] Masscan is installed")
     else :
         print("[!] Masscan is NOT installed -- Installing now...")
-        subprocess.run([f"cd {home_dir}/Tools;  apt-get --assume-yes install git make gcc; git clone https://github.com/robertdavidgraham/masscan; cd masscan; make; make install;"], shell=True)
+        subprocess.run([f"cd {home_dir}/Tools; sudo apt-get --assume-yes install git make gcc; git clone https://github.com/robertdavidgraham/masscan; cd masscan; make; make install;"], shell=True)
         print("[+] Masscan was successfully installed")
 
 def write_subdomain_file(subdomainArr):
@@ -108,7 +109,7 @@ def write_subdomain_file(subdomainArr):
             consolidatedStr += f"{modified_subdomain}\n"
         else:
             consolidatedStr += f"{subdomain}\n"
-    f = open("/home/ars0n/tmp/dnmasscan.tmp", "w")
+    f = open("/tmp/dnmasscan.tmp", "w")
     f.write(consolidatedStr)
     f.close()
 
@@ -122,13 +123,13 @@ def main(args):
         masscan_install()
     print("[-] Running dnmasscan against consolidated server list...")
     write_subdomain_file(subdomainArr)
-    dnmasscan_results = subprocess.run([f"cd {home_dir}/Tools/dnmasscan;  ./dnmasscan /home/ars0n/tmp/dnmasscan.tmp /home/ars0n/tmp/dns.log -p1-65535 -oJ /home/ars0n/tmp/masscan.json --rate=100000"], stderr=subprocess.PIPE, text=True, shell=True)
+    dnmasscan_results = subprocess.run([f"cd {home_dir}/Tools/dnmasscan; sudo ./dnmasscan /tmp/dnmasscan.tmp /tmp/dns.log -p1-65535 -oJ /tmp/masscan.json --rate=100000"], stderr=subprocess.PIPE, text=True, shell=True)
     if "FAIL" in dnmasscan_results.stderr:
         print("[!] Masscan failed!  Attempting to fix the issue...")
-        subprocess.run(["sed -i '1d' /home/ars0n/tmp/dnmasscan.tmp"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
-        subprocess.run([f"cd {home_dir}/Tools/dnmasscan;  ./dnmasscan /home/ars0n/tmp/dnmasscan.tmp /home/ars0n/tmp/dns.log -p1-65535 -oJ /home/ars0n/tmp/masscan.json --rate=100000"], shell=True)
-    # subprocess.run(["rm /home/ars0n/tmp/dnmasscan.tmp"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
-    f = open("/home/ars0n/tmp/masscan.json", "r")
+        subprocess.run(["sed -i '1d' /tmp/dnmasscan.tmp"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
+        subprocess.run([f"cd {home_dir}/Tools/dnmasscan; sudo ./dnmasscan /tmp/dnmasscan.tmp /tmp/dns.log -p1-65535 -oJ /tmp/masscan.json --rate=100000"], shell=True)
+    # subprocess.run(["rm /tmp/dnmasscan.tmp"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
+    f = open("/tmp/masscan.json", "r")
     data = f.read()
     if len(data) < 1:
         print("[!] DNMasscan returned no results.  Exiting...")

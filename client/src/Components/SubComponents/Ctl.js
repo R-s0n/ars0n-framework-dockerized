@@ -61,7 +61,7 @@ const Ctl = props => {
                     <p><b>DETAILS: </b>Gets all subdomains to a domain by querying the database of the crt.sh Certificate Transparency search engine.</p>
                     <p><b>GOAL: </b>Identify valid sub-domains of the current FQDN to help build a complete picture of the application.</p>
                     <p><b>DOWNLOAD / INSTALL: </b><span onClick={notify}>git clone https://github.com/hannob/tlshelpers.git</span></p>
-                    <p><b>RUN: </b><span onClick={notify}> ./getsubdomain {props.thisFqdn.fqdn} | xclip -i -selection clipboard</span></p>
+                    <p><b>RUN: </b><span onClick={notify}>sudo ./getsubdomain {props.thisFqdn.fqdn} | xclip -i -selection clipboard</span></p>
                 </div>
             </div>
             <div className="row">

@@ -23,6 +23,7 @@ lockfile = "*"
 Unidecode = "*"
 colored = "*"
 python-dotenv = "*"
+psutil = "*"
 
 [tool.poetry.dev-dependencies]
 

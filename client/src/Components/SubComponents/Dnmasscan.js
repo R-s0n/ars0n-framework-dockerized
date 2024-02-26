@@ -63,8 +63,8 @@ const Dnmasscan = props => {
                     <p><b>DETAILS: </b>Dnmasscan is a bash script to automate resolving a file of domain names and subsequentlly scanning them using masscan.  As masscan does not accept domain names, a file is created (specified in the second argument to the script) which will log which IP addresses resolve to which domain names for cross reference after the script has finished executing.</p>
                     <p><b>GOAL: </b>Using the consolidated list of subdomains, this tool will identify a large number of the servers our target is running and perform a full port scan on them.</p>
                     <p><b>DOWNLOAD: </b><span onClick={notify}>https://github.com/rastating/dnmasscan.git</span></p>
-                    <p><b>INSTALL: </b><span onClick={notify}> apt-get --assume-yes install git make gcc; git clone https://github.com/robertdavidgraham/masscan; cd masscan; make; make install;</span></p>
-                    <p><b>RUN: </b><span onClick={notify}> ./dnmasscan /home/ars0n/tmp/dnmasscan.tmp /home/ars0n/tmp/dns.log -p1-65535 --rate=500 | xclip -i -selection clipboard</span></p>
+                    <p><b>INSTALL: </b><span onClick={notify}>sudo apt-get --assume-yes install git make gcc; git clone https://github.com/robertdavidgraham/masscan; cd masscan; make; make install;</span></p>
+                    <p><b>RUN: </b><span onClick={notify}>sudo ./dnmasscan /tmp/dnmasscan.tmp /tmp/dns.log -p1-65535 --rate=500 | xclip -i -selection clipboard</span></p>
                 </div>
             </div>
             <div className="row">

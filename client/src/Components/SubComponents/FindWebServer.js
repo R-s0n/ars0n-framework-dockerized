@@ -63,7 +63,7 @@ const FindWebServer = props => {
                     <p><b>DETAILS: </b>This tool pulls the dnmasscan results from the WAPT Framework and checks each server/port combination to find any that are actively running web servers.</p>
                     <p><b>GOAL: </b>Identify hidden/obfuscated web servers that can potentially be exploited.</p>
                     <p><b>DOWNLOAD/INSTALL: </b><span onClick={notify}>git clone https://github.com/R-s0n/Fire_Spreader.git</span></p>
-                    <p><b>RUN: </b><span onClick={notify}>python wind.py -d {props.thisFqdn.fqdn}</span></p>
+                    <p><b>RUN: </b><span onClick={notify}>python3 wind.py -d {props.thisFqdn.fqdn}</span></p>
                 </div>
             </div>
             <div className="row mt-3">

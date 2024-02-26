@@ -4,8 +4,8 @@ import requests, sys, subprocess, argparse, json, time, math, random
 from datetime import datetime
 
 def get_home_dir():
-    home_dir = "/home/ars0n"
-    return home_dir
+    get_home_dir = subprocess.run(["echo $HOME"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True, shell=True)
+    return get_home_dir.stdout.replace("\n", "")
 
 def get_target_url_string(args):
     r = requests.post(f'http://{args.server}:{args.port}/api/auto', data={'fqdn':args.domain})
@@ -45,8 +45,8 @@ def run_arjun_get(args, sorted_endpoints, url):
                 thisEndpoint = "/"
             target = url + thisEndpoint
             print(f"[-] Scanning {target} for hidden parameters...")
-            subprocess.run([f"arjun -u {target}  -oJ /home/ars0n/tmp/arjun-test.tmp -oT arjun-text.txt -w wordlists/params.txt -oB {args.proxy}:8080"], shell=True)
-            with open('/home/ars0n/tmp/arjun-test.tmp') as json_file:
+            subprocess.run([f"arjun -u {target}  -oJ temp/arjun-test.tmp -oT arjun-text.txt -w wordlists/params.txt -oB {args.proxy}:8080"], shell=True)
+            with open('temp/arjun-test.tmp') as json_file:
                 data = json.load(json_file)
             print(f"[+] Scan complete!")
             if target not in data:
@@ -85,8 +85,8 @@ def run_arjun_post(args, sorted_endpoints, url):
                 thisEndpoint = "/"
             target = url + thisEndpoint
             print(f"[-] Scanning {target} for hidden parameters...")
-            subprocess.run([f"arjun -u {target}  -oJ /home/ars0n/tmp/arjun-test.tmp -oT arjun-text.txt -w wordlists/params.txt -oB {args.proxy}:8080 -q -m POST"], shell=True)
-            with open('/home/ars0n/tmp/arjun-test.tmp') as json_file:
+            subprocess.run([f"arjun -u {target}  -oJ temp/arjun-test.tmp -oT arjun-text.txt -w wordlists/params.txt -oB {args.proxy}:8080 -q -m POST"], shell=True)
+            with open('temp/arjun-test.tmp') as json_file:
                 data = json.load(json_file)
             print(f"[+] Scan complete!")
             if target not in data:
@@ -125,8 +125,8 @@ def run_arjun_json(args, sorted_endpoints, url):
                 thisEndpoint = "/"
             target = url + thisEndpoint
             print(f"[-] Scanning {target} for hidden parameters...")
-            subprocess.run([f"arjun -u {target}  -oJ /home/ars0n/tmp/arjun-test.tmp -oT arjun-text.txt -w wordlists/params.txt -oB {args.proxy}:8080 -q -m JSON"], shell=True)
-            with open('/home/ars0n/tmp/arjun-test.tmp') as json_file:
+            subprocess.run([f"arjun -u {target}  -oJ temp/arjun-test.tmp -oT arjun-text.txt -w wordlists/params.txt -oB {args.proxy}:8080 -q -m JSON"], shell=True)
+            with open('temp/arjun-test.tmp') as json_file:
                 data = json.load(json_file)
             print(f"[+] Scan complete!")
             if target not in data:

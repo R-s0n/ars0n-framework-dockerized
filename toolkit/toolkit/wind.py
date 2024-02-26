@@ -32,8 +32,8 @@ for current_argument, current_value in arguments:
         server_port = current_value
         hasPort = True
 
-home_dir = "/home/ars0n"
- 
+get_home_dir = subprocess.run(["echo $HOME"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True, shell=True)
+home_dir = get_home_dir.stdout.replace("\n", "")
 
 r = requests.post(f'http://{server_ip}:{server_port}/api/auto', data={'fqdn':fqdn})
 thisFqdn = r.json()
@@ -44,14 +44,14 @@ server_data_str = ""
 for server in server_data_arr:
     server_data_str += f"{server}\n"
 
-f = open("/home/ars0n/tmp/masscan_httprobe.tmp", "w")
+f = open("/tmp/masscan_httprobe.tmp", "w")
 f.write(server_data_str)
 f.close()
 
 live_server_arr = []
 
 print(f"[-] Running Httprobe against masscan results...")
-connect = subprocess.run([f"cat /home/ars0n/tmp/masscan_httprobe.tmp | {home_dir}/go/bin/httprobe -t 30000 -c 50"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True, shell=True)
+connect = subprocess.run([f"cat /tmp/masscan_httprobe.tmp | {home_dir}/go/bin/httprobe -t 30000 -c 50"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True, shell=True)
 print(f"[+] Httprobe completed successfully!")
 temp_arr = connect.stdout.split("\n")
 for each in temp_arr:   
@@ -83,18 +83,18 @@ if httprobe_check.returncode == 0:
     print("[+] EyeWitness is already installed")
 else :
     print("[!] EyeWitness is NOT already installed -- Installing now...")
-    cloning = subprocess.run([f"cd {home_dir}/Tools; git clone https://github.com/FortyNorthSecurity/EyeWitness.git;  cd EyeWitness/Python/setup/;   ./setup.sh"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
+    cloning = subprocess.run([f"cd {home_dir}/Tools; git clone https://github.com/FortyNorthSecurity/EyeWitness.git;  cd EyeWitness/Python/setup/;  sudo ./setup.sh"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
     print("[+] EyeWitness successfully installed!")
 
 server_string = ""
 for server in final_arr:
     server_string += f"{server}\n"
-f = open("/home/ars0n/tmp/httprobe_masscan_results.tmp", "w")
+f = open("/tmp/httprobe_masscan_results.tmp", "w")
 f.write(server_string)
 f.close()
 now = datetime.now().strftime("%d-%m-%y_%I%p")
 print(f"[-] Running EyeWitness report against {fqdn} httprobe results...")
-subprocess.run([f"cd {home_dir}/Tools/EyeWitness/Python; ./EyeWitness.py -f /home/ars0n/tmp/httprobe_masscan_results.tmp -d {home_dir}/Reports/EyeWitness_wind_{fqdn}_{now} --no-prompt --jitter 5 --timeout 10"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
+subprocess.run([f"cd {home_dir}/Tools/EyeWitness/Python; ./EyeWitness.py -f /tmp/httprobe_masscan_results.tmp -d {home_dir}/Reports/EyeWitness_wind_{fqdn}_{now} --no-prompt --jitter 5 --timeout 10"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
 print(f"[+] EyeWitness report complete!")
 
 end = time.time()

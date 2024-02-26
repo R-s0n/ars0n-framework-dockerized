@@ -96,13 +96,14 @@ def clean_urls(url_list):
     return clean_url_list
 
 def get_home_dir():
-    home_dir = "/home/ars0n"
-    return home_dir
+    get_home_dir = subprocess.run(["echo $HOME"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True, shell=True)
+    return get_home_dir.stdout.replace("\n", "")
 
 def send_slack_notification(args, url, package):
     home_dir = get_home_dir()
     message_json = {'text':f'Package {package} was found running on {url}!  (This will have a lot more information after I add this to the framework...)','username':'Vuln Disco Box','icon_emoji':':dart:'}
-    token = os.getenv('SLACK_TOKEN')
+    f = open(f'{home_dir}/.keys/slack_web_hook')
+    token = f.read()
     slack_auto = requests.post(f'https://hooks.slack.com/services/{token}', json=message_json)
 
 def wappalyzer(url):

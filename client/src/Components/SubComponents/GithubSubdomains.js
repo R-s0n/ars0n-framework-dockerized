@@ -64,7 +64,7 @@ const GithubSubdomains = props => {
                     <p><b>GOAL: </b>Scape public GitHub repos for additional subdomains.</p>
                     <p><b>DOWNLOAD: </b><span onClick={notify}>git clone https://github.com/gwen001/github-search.git</span></p>
                     <p><b>INSTALL: </b><span onClick={notify}>pip3 install -r requirements2.txt</span></p>
-                    <p><b>RUN: </b><span onClick={notify}>python github-subdomains.py -d {props.thisFqdn.fqdn} -t $github_apikey &et; githubsubdomains.{props.thisFqdn.fqdn}.txt; cat githubsubdomains.{props.thisFqdn.fqdn}.txt | xclip -i -selection clipboard</span></p>
+                    <p><b>RUN: </b><span onClick={notify}>python3 github-subdomains.py -d {props.thisFqdn.fqdn} -t $github_apikey &et; githubsubdomains.{props.thisFqdn.fqdn}.txt; cat githubsubdomains.{props.thisFqdn.fqdn}.txt | xclip -i -selection clipboard</span></p>
                 </div>
             </div>
             <div className="row">
