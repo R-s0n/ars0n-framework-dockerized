@@ -61,7 +61,7 @@ const Gau = props => {
                     <p><b>DETAILS: </b>Getallurls (gau) fetches known URLs from AlienVault's Open Threat Exchange, the Wayback Machine, and Common Crawl for any given domain. Inspired by Tomnomnom's waybackurls.</p>
                     <p><b>GOAL: </b>Identify valid sub-domains of the current FQDN to help build a complete picture of the application.</p>
                     <p><b>DOWNLOAD / INSTALL: </b><span onClick={notify}>GO111MODULE=on go get -u -v github.com/lc/gau</span></p>
-                    <p><b>RUN: </b><span onClick={notify}> gau -subs {props.thisFqdn.fqdn} | cut -d / -f 3 | sort -u &gt; gau.{props.thisFqdn.fqdn}.txt; cat gau.{props.thisFqdn.fqdn}.txt | xclip -i -selection clipboard</span></p>
+                    <p><b>RUN: </b><span onClick={notify}>sudo gau -subs {props.thisFqdn.fqdn} | cut -d / -f 3 | sort -u &gt; gau.{props.thisFqdn.fqdn}.txt; cat gau.{props.thisFqdn.fqdn}.txt | xclip -i -selection clipboard</span></p>
                 </div>
             </div>
             <div className="row">

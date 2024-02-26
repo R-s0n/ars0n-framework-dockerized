@@ -5,7 +5,7 @@
 # (@m4ll0k2)
 '''
 $ cat my_targets.txt|xargs -I %% bash -c 'echo "http://%%/favicon.ico"' > targets.txt
-$ python favihash.py -f https://reliable-domain/favicon.ico -t targets.txt -s 
+$ python3 favihash.py -f https://reliable-domain/favicon.ico -t targets.txt -s 
 
 '''
 

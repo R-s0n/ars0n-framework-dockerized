@@ -18,33 +18,37 @@ class Timer:
     
 class Logger:
     def __init__(self):
-        subprocess.run(["[ -f /home/ars0n/logs/log.txt ] || touch /home/ars0n/logs/log.txt; rm -f logs/temp_log.txt"], shell=True)
-        with open("/home/ars0n/logs/log.txt", "r") as file:
+        subprocess.run(["[ -f logs/log.txt ] || touch logs/log.txt; rm -f logs/temp_log.txt"], shell=True)
+        log_start_time = datetime.now()
+        with open("logs/log.txt", "r") as file:
             self.init_log_data = file.readlines()
             self.init_log_len = len(self.init_log_data)
-        with open("/home/ars0n/logs/log.txt", "a") as file:
-            log_start_time = datetime.now()
+        with open("logs/log.txt", "a") as file:
+            flag = "[INIT]"
+            running_script = "Wildfire.py"
+            message = "Logger Initialized"
+            file.write(f"{flag} {log_start_time} | {running_script} -- {message}\n")
+        with open("logs/temp_log.txt", "a") as file:
             flag = "[INIT]"
             running_script = "Wildfire.py"
             message = "Logger Initialized"
             file.write(f"{flag} {log_start_time} | {running_script} -- {message}\n")
 
     def write_to_log(self, flag, running_script, message):
-        with open("/home/ars0n/logs/log.txt", "a") as file:
-            log_start_time = str(datetime.now())
+        log_start_time = str(datetime.now())
+        with open("logs/log.txt", "a") as file:
             file.write(f"{flag} {log_start_time} | {running_script} -- {message}\n")
         with open("logs/temp_log.txt", "a") as file:
-            log_start_time = str(datetime.now())
             file.write(f"{flag} {log_start_time} | {running_script} -- {message}\n")
 
     def create_datebase_log(self, args):
         try:
-            subprocess.run(["[ -f /home/ars0n/logs/log.txt ] || touch /home/ars0n/logs/log.txt"], shell=True)
+            subprocess.run(["[ -f logs/log.txt ] || touch logs/log.txt"], shell=True)
             logEntry = {
                 "scan":"Wildfire.py -- " + str(datetime.now()),
                 "logFile":[]
             }
-            with open("/home/ars0n/logs/temp_log.txt", "r") as file:
+            with open("logs/temp_log.txt", "r") as file:
                     clean_log_file = []
                     for line in file.readlines():
                         if len(line.strip()) > 3:
@@ -65,7 +69,7 @@ def get_fqdns(args):
 def clean_screenshots(args):
     res = get_fqdns(args)
     fqdns = json.loads(res.text)
-    screenshots = os.listdir("/home/ars0n/screenshots")
+    screenshots = os.listdir("../client/public/screenshots")
     for screenshot in screenshots:
         if ".gitkeep" in screenshot:
             continue
@@ -76,7 +80,7 @@ def clean_screenshots(args):
                 print(f"[+] Screenshot {screenshot} should NOT be deleted.")
                 delete_screenshot = False
         if delete_screenshot:
-            subprocess.run([f"rm -f /home/ars0n/screenshots/{screenshot}"], shell=True)
+            subprocess.run([f"rm -f ../client/public/screenshots/{screenshot}"], shell=True)
 
 
 def sort_fqdns(fqdns):
@@ -95,7 +99,7 @@ def start_single_domain(args, logger, fqdn):
         print(f"[-] Running Fire-Starter Modules (Subdomain Recon) against targeted domain: {fqdn}")
         logger.write_to_log("[MSG]", "Wildfire.py", f"Running Fire-Starter.py -> {fqdn}")
         try:
-            subprocess.run([f'python toolkit/fire-starter.py -d {fqdn} -S {args.server} -P {args.port} -p {args.proxy}'], shell=True)
+            subprocess.run([f'python3 toolkit/fire-starter.py -d {fqdn} -S {args.server} -P {args.port} -p {args.proxy}'], shell=True)
         except Exception as e:
             print(f"[!] Exception: {e}")
 
@@ -104,7 +108,7 @@ def cloud_single_domain(args, logger, fqdn):
         print(f"[-] Running Fire-Cloud Modules against targeted domain: {fqdn}")
         logger.write_to_log("[MSG]", "Wildfire.py", f"Running Fire-Cloud.py -> {fqdn}")
         try:
-            subprocess.run([f'python toolkit/fire-cloud.py -S {args.server} -P {args.port} -d {fqdn}'], shell=True)
+            subprocess.run([f'python3 toolkit/fire-cloud.py -S {args.server} -P {args.port} -d {fqdn}'], shell=True)
         except Exception as e:
             print(f"[!] Exception: {e}")
 
@@ -113,7 +117,7 @@ def scan_single_domain(args, logger, fqdn):
         print(f"[-] Running Drifting-Embers Modules (Vuln Scanning) against targeted domain: {fqdn}")
         logger.write_to_log("[MSG]", "Wildfire.py", f"Running Fire-Scanner.py -> {fqdn}")
         try:
-            subprocess.run([f'python toolkit/fire-scanner.py -S {args.server} -P {args.port} -d {fqdn}'], shell=True)
+            subprocess.run([f'python3 toolkit/fire-scanner.py -S {args.server} -P {args.port} -d {fqdn}'], shell=True)
         except Exception as e:
             print(f"[!] Exception: {e}")
 
@@ -130,7 +134,7 @@ def start(args, logger):
                 seed = args.targeted
                 print(f"[-] Running Fire-Starter Modules (Subdomain Recon) against a single target: {seed}")
                 try:
-                    subprocess.run([f'python toolkit/fire-starter.py -d {seed} -S {args.server} -P {args.port} -p {args.proxy}'], shell=True)
+                    subprocess.run([f'python3 toolkit/fire-starter.py -d {seed} -S {args.server} -P {args.port} -p {args.proxy}'], shell=True)
                 except Exception as e:
                     print(f"[!] Exception: {e}")
                 return True
@@ -139,17 +143,17 @@ def start(args, logger):
             logger.write_to_log("[MSG]","Wildfire.py",f"Running Fire-Starter.py -> {seed}")
             if args.deep:
                 try:
-                    subprocess.run([f'python toolkit/fire-starter.py -d {seed} -S {args.server} -P {args.port} -p {args.proxy} --deep'], shell=True)
+                    subprocess.run([f'python3 toolkit/fire-starter.py -d {seed} -S {args.server} -P {args.port} -p {args.proxy} --deep'], shell=True)
                 except Exception as e:
                     print(f"[!] Exception: {e}")
             if args.timeout:
                 try:
-                    subprocess.run([f'python toolkit/fire-starter.py -d {seed} -S {args.server} -P {args.port} -p {args.proxy} -t {args.timeout}'], shell=True)
+                    subprocess.run([f'python3 toolkit/fire-starter.py -d {seed} -S {args.server} -P {args.port} -p {args.proxy} -t {args.timeout}'], shell=True)
                 except Exception as e:
                     print(f"[!] Exception: {e}")
             else:
                 try:
-                    subprocess.run([f'python toolkit/fire-starter.py -d {seed} -S {args.server} -P {args.port} -p {args.proxy}'], shell=True)
+                    subprocess.run([f'python3 toolkit/fire-starter.py -d {seed} -S {args.server} -P {args.port} -p {args.proxy}'], shell=True)
                 except Exception as e:
                     print(f"[!] Exception: {e}")
         else:
@@ -169,26 +173,26 @@ def spread(args):
                 seed = args.targeted
                 print(f"[-] Running Fire-Spreader Modules (Server/Port Recon) against a single target: {seed}")
                 try:
-                    subprocess.run([f'python toolkit/fire-spreader.py -d {seed} -s {args.server} -p {args.port}'], shell=True)
+                    subprocess.run([f'python3 toolkit/fire-spreader.py -d {seed} -s {args.server} -p {args.port}'], shell=True)
                 except Exception as e:
                     print(f"[!] Exception: {e}")
                 try:
-                    subprocess.run([f'python toolkit/wind.py -d {seed} -s {args.server} -p {args.port}'], shell=True)
+                    subprocess.run([f'python3 toolkit/wind.py -d {seed} -s {args.server} -p {args.port}'], shell=True)
                 except Exception as e:
                     print(f"[!] Exception: {e}")
                 return True
             seed = fqdn['fqdn']
             print(f"[-] Running Fire-Spreader Modules (Server/Port Recon) against {seed}")
             try:
-                subprocess.run([f'python toolkit/fire-spreader.py -d {seed} -s {args.server} -p {args.port}'], shell=True)
+                subprocess.run([f'python3 toolkit/fire-spreader.py -d {seed} -s {args.server} -p {args.port}'], shell=True)
             except Exception as e:
                     print(f"[!] Exception: {e}")
             # try:        
-            #     subprocess.run([f'python toolkit/firewood.py -d {seed} -s {args.server} -p {args.port}'], shell=True)
+            #     subprocess.run([f'python3 toolkit/firewood.py -d {seed} -s {args.server} -p {args.port}'], shell=True)
             # except Exception as e:
             #         print(f"[!] Exception: {e}")
             try:
-                subprocess.run([f'python toolkit/wind.py -d {seed} -s {args.server} -p {args.port}'], shell=True)
+                subprocess.run([f'python3 toolkit/wind.py -d {seed} -s {args.server} -p {args.port}'], shell=True)
             except Exception as e:
                     print(f"[!] Exception: {e}")
         else:
@@ -205,7 +209,7 @@ def cloud(args, logger):
                 seed = args.targeted
                 print(f"[-] Running Fire-Cloud Modules against a single target: {seed}")
                 try:
-                    subprocess.run([f'python toolkit/fire-cloud.py -S {args.server} -P {args.port} -d {seed}'], shell=True)
+                    subprocess.run([f'python3 toolkit/fire-cloud.py -S {args.server} -P {args.port} -d {seed}'], shell=True)
                 except Exception as e:
                     print(f"[!] Exception: {e}")
                 return True
@@ -213,7 +217,7 @@ def cloud(args, logger):
             print(f"[-] Running Fire-Cloud Modules against {seed}")
             logger.write_to_log("[MSG]","Wildfire.py",f"Running Fire-Cloud.py -> {seed}")
             try:
-                subprocess.run([f'python toolkit/fire-cloud.py -S {args.server} -P {args.port} -d {seed}'], shell=True)
+                subprocess.run([f'python3 toolkit/fire-cloud.py -S {args.server} -P {args.port} -d {seed}'], shell=True)
             except Exception as e:
                     print(f"[!] Exception: {e}")
         else:
@@ -230,7 +234,7 @@ def scan(args, logger):
                 seed = args.targeted
                 print(f"[-] Running Drifting-Embers Modules (Vuln Scanning) against a single target: {seed}")
                 try:
-                    subprocess.run([f'python toolkit/fire-scanner.py -S {args.server} -P {args.port} -d {seed}'], shell=True)
+                    subprocess.run([f'python3 toolkit/fire-scanner.py -S {args.server} -P {args.port} -d {seed}'], shell=True)
                 except Exception as e:
                     print(f"[!] Exception: {e}")
                 return True
@@ -238,15 +242,15 @@ def scan(args, logger):
             print(f"[-] Running Drifting-Embers Modules (Vuln Scanning) against {seed}")
             logger.write_to_log("[MSG]","Wildfire.py",f"Running Fire-Scanner.py -> {seed}")
             try:
-                subprocess.run([f'python toolkit/fire-scanner.py -S {args.server} -P {args.port} -d {seed}'], shell=True)
+                subprocess.run([f'python3 toolkit/fire-scanner.py -S {args.server} -P {args.port} -d {seed}'], shell=True)
             except Exception as e:
                     print(f"[!] Exception: {e}")
             # try:
-            #     subprocess.run([f'python toolkit/proto_pollution_embers.py -d {seed} -s {args.server} -p {args.port} -T 2'], shell=True)
+            #     subprocess.run([f'python3 toolkit/proto_pollution_embers.py -d {seed} -s {args.server} -p {args.port} -T 2'], shell=True)
             # except Exception as e:
             #         print(f"[!] Exception: {e}")
             # try:
-            #     subprocess.run([f'python toolkit/cve_embers.py -D {seed} -S {args.server} -P {args.port} -j -d 1'], shell=True)
+            #     subprocess.run([f'python3 toolkit/cve_embers.py -D {seed} -S {args.server} -P {args.port} -j -d 1'], shell=True)
             # except Exception as e:
             #         print(f"[!] Exception: {e}")
         else:
@@ -265,27 +269,39 @@ def enum(args):
                 seed = args.targeted
                 print(f"[-] Running Enumeration Modules against a single target: {seed}")
                 try:
-                    subprocess.run([f'python toolkit/ignite.py -d {seed} -s {args.server} -p {args.port} -P {args.proxy}'], shell=True)
+                    subprocess.run([f'python3 toolkit/ignite.py -d {seed} -s {args.server} -p {args.port} -P {args.proxy}'], shell=True)
                 except Exception as e:
                     print(f"[!] Exception: {e}")
                 return True
             try:
-                subprocess.run([f'python toolkit/engulf.py -d {seed} -s {args.server} -p {args.port}'], shell=True)
+                subprocess.run([f'python3 toolkit/engulf.py -d {seed} -s {args.server} -p {args.port}'], shell=True)
             except Exception as e:
                     print(f"[!] Exception: {e}")
             seed = fqdn['fqdn']
             print(f"[-] Running Enumeration Modules against {seed}")
             try:
-                subprocess.run([f'python toolkit/ignite.py -d {seed} -s {args.server} -p {args.port} -P {args.proxy}'], shell=True)
+                subprocess.run([f'python3 toolkit/ignite.py -d {seed} -s {args.server} -p {args.port} -P {args.proxy}'], shell=True)
             except Exception as e:
                     print(f"[!] Exception: {e}")
             try:
-                subprocess.run([f'python toolkit/engulf.py -d {seed} -s {args.server} -p {args.port}'], shell=True)
+                subprocess.run([f'python3 toolkit/engulf.py -d {seed} -s {args.server} -p {args.port}'], shell=True)
             except Exception as e:
                     print(f"[!] Exception: {e}")
         else:
             print(f"[!] {fqdn['fqdn']} has been blacklisted for this round of scanning.  Skipping...")
     return True
+
+def collect_screenshots(args):
+    res = get_fqdns(args)
+    fqdn_json = json.loads(res.text)
+    sorted_fqdns = sort_fqdns(fqdn_json)
+    for fqdn in sorted_fqdns:
+        try:
+            seed = fqdn['fqdn']
+            subprocess.run([f'python3 toolkit/fire-starter.py -d {seed} -S {args.server} -P {args.port} --screenshots'], shell=True)
+        except Exception as e:
+            print(f"[!] Exception: {e}")
+        
 
 def build_blacklist(args):
     if "," in args.blacklist:
@@ -299,7 +315,7 @@ def build_blacklist(args):
 
 def arg_parse():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-S','--server', help='IP Address of MongoDB API', required=False, default="ars0n-server")
+    parser.add_argument('-S','--server', help='IP Address of MongoDB API', required=False, default="node-server")
     parser.add_argument('-P','--port', help='Port of MongoDB API', required=False, default="8000")
     parser.add_argument('-p','--proxy', help='IP Address of Burp Suite Proxy', required=False)
     parser.add_argument('-b','--blacklist', help='FQDN to Blacklist (skip) for this round of testing.  Separate multiple FQDNs w/ a comma (Ex: -b example1.com,example2.com)', required=False)
@@ -314,10 +330,14 @@ def arg_parse():
     parser.add_argument('-t','--timeout', help='Adds a timeout check after each module (in minutes)', required=False)
     parser.add_argument('--fqdn', help='FQDN to target for scanning', required=False)
     parser.add_argument('--scanSingle', help='Flag to scan a single domain', required=False, action='store_true')
+    parser.add_argument('-s', '--screenshots', help='Collect a new round of screenshots for all live URLs', required=False, action='store_true')
     return parser.parse_args()
 
 def main(args):
     logger = Logger()
+    if args.screenshots:
+       collect_screenshots(args)
+       exit()
     if (args.blacklist):
         args = build_blacklist(args)
     else:

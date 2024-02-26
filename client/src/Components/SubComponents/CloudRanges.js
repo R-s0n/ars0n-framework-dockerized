@@ -63,7 +63,7 @@ const CloudRanges = props => {
                     <p><b>DETAILS: </b>This tool proactively scans all of AWS's IP ranges looking for any servers running port 443.  The tool then pulls the TLS/SSL certificate from each of these servers and stores them in searchable JSON format.</p>
                     <p><b>GOAL: </b>Identify servers hosted in AWS that are in scope but are likely not intended to be found by the developer.</p>
                     <p><b>DOWNLOAD/INSTALL: </b><span onClick={notify}>https://github.com/R-s0n/Fire_Spreader.git</span></p>
-                    <p><b>RUN: </b><span onClick={notify}>python clear_sky.py -d {props.thisFqdn.fqdn}</span></p>
+                    <p><b>RUN: </b><span onClick={notify}>python3 clear_sky.py -d {props.thisFqdn.fqdn}</span></p>
                 </div>
             </div>
             <div className="row">

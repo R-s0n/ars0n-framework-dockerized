@@ -1,11 +1,6 @@
 from os import remove
 import requests, sys, subprocess, getopt, json, time, math
 from datetime import datetime
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
-
 
 start = datetime.now()
 
@@ -42,12 +37,11 @@ for current_argument, current_value in arguments:
         hasTemplate = True
 
 if hasDomain is False or hasServer is False or hasPort is False or hasTemplate is False:
-    print("[!] USAGE: python kindling.py -d [TARGET_FQDN] -s [WAPT_FRAMEWORK_IP] -p [WAPT_FRAMEWORK_PORT] -t [TEMPLATE]")
+    print("[!] USAGE: python3 kindling.py -d [TARGET_FQDN] -s [WAPT_FRAMEWORK_IP] -p [WAPT_FRAMEWORK_PORT] -t [TEMPLATE]")
     sys.exit(2)
 
-
-home_dir = "/home/ars0n"
-
+get_home_dir = subprocess.run(["echo $HOME"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True, shell=True)
+home_dir = get_home_dir.stdout.replace("\n", "")
 
 subprocess.run([f'export PATH="$HOME/go/bin:$PATH"; {home_dir}/go/bin/nuclei -update -ut;'], shell=True)
 
@@ -67,15 +61,15 @@ url_str = ""
 for url in urls:
     url_str += f"{url}\n"
 
-f = open("/home/ars0n/tmp/urls.txt", "w")
+f = open("/tmp/urls.txt", "w")
 f.write(url_str)
 f.close()
 
 now = datetime.now().strftime("%d-%m-%y_%I%p")
 
-subprocess.run([f"{home_dir}/go/bin/nuclei -t {template} -l /home/ars0n/tmp/urls.txt -fhr -sb --headless -o /home/ars0n/tmp/{fqdn}-{now}.json -json"], shell=True)
+subprocess.run([f"{home_dir}/go/bin/nuclei -t {template} -l /tmp/urls.txt -fhr -sb --headless -o /tmp/{fqdn}-{now}.json -json"], shell=True)
 
-f = open(f"/home/ars0n/tmp/{fqdn}-{now}.json")
+f = open(f"/tmp/{fqdn}-{now}.json")
 results = f.read().split("\n")
 data = []
 counter = 0
@@ -110,5 +104,6 @@ runtime_minutes = math.floor(runtime_seconds / 60)
 target_count = len(urls)
 if non_info_counter > 0:
     message_json = {'text':f'Nuclei Scan Completed!\n\nResults:\nWeb Servers Scanned: {target_count}\nRood/Seed Targeted: {fqdn}\nTemplate Category: {template}\nImpactful Results: {non_info_counter}\nInformational Results: {info_counter}\nScan Time: {runtime_minutes} minutes\nReport Location: {home_dir}/Reports/{template}-{now}.json\n\nNothing wrong with a little Spray and Pray!!  :pray:','username':'Vuln Disco Box','icon_emoji':':dart:'}
-    token = os.getenv('SLACK_TOKEN')
+    f = open(f'{home_dir}/.keys/slack_web_hook')
+    token = f.read()
     slack_auto = requests.post(f'https://hooks.slack.com/services/{token}', json=message_json)     

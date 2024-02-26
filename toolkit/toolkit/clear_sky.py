@@ -33,8 +33,8 @@ for current_argument, current_value in arguments:
         updateMode = True
 
 
-home_dir = "/home/ars0n"
-
+get_home_dir = subprocess.run(["echo $HOME"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True, shell=True)
+home_dir = get_home_dir.stdout.replace("\n", "")
 
 print(f"[+] Running ClearSky against {fqdn}!")
 
@@ -56,29 +56,29 @@ if updateMode:
         ip_ranges.append(ip_range['ip_prefix'])
         ip_ranges_str += f"{ip_range['ip_prefix']}\n"
     f.close()
-    f = open("/home/ars0n/tmp/aws_ips.tmp", "w")
+    f = open("/tmp/aws_ips.tmp", "w")
     f.write(ip_ranges_str)
     f.close()
 
     print(f"[-] Running initial scan to identify hosts...")
-    ip_count = subprocess.run([f"nmap -n -sL -iL /home/ars0n/tmp/aws_ips.tmp | wc -l"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
+    ip_count = subprocess.run([f"nmap -n -sL -iL /tmp/aws_ips.tmp | wc -l"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
     ips = ip_count.stdout.replace("\n", "")
 
     print(f"[-] Running masscan against {ips} IPs...")
-    subprocess.run([f" {home_dir}/Tools/masscan/bin/masscan -p443 --rate 40000 -iL /home/ars0n/tmp/aws_ips.tmp -oL /home/ars0n/tmp/clear_sky_masscan.tmp"], shell=True)
-    subprocess.run(["cat /home/ars0n/tmp/clear_sky_masscan.tmp | awk {'print $4'} | awk NF | sort -u > /home/ars0n/tmp/tls-scan-in.tmp"], shell=True)
+    subprocess.run([f"sudo {home_dir}/Tools/masscan/bin/masscan -p443 --rate 40000 -iL /tmp/aws_ips.tmp -oL /tmp/clear_sky_masscan.tmp"], shell=True)
+    subprocess.run(["cat /tmp/clear_sky_masscan.tmp | awk {'print $4'} | awk NF | sort -u > /tmp/tls-scan-in.tmp"], shell=True)
     
     print(f"[+] Successfully completed running masscan against {ips} IPs!")
 
     print(f"[-] Running tls-scan on masscan results to collect SSL/TLS Certificates...")
-    subprocess.run([f"cat /home/ars0n/tmp/tls-scan-in.tmp | {home_dir}/Tools/tls-scan/tls-scan --port=443 --concurrency=150 --cacert={home_dir}/Tools/tls-scan/ca-bundle.crt 2>/dev/null -o /home/ars0n/tmp/tls-results.json"], shell=True)
+    subprocess.run([f"cat /tmp/tls-scan-in.tmp | {home_dir}/Tools/tls-scan/tls-scan --port=443 --concurrency=150 --cacert={home_dir}/Tools/tls-scan/ca-bundle.crt 2>/dev/null -o /tmp/tls-results.json"], shell=True)
     print(f"[+] Successfully completed the tls-scan!")
 
 print(f"[-] Using jq to parse for the FQDN...")
-subprocess.run([f"""cat /home/ars0n/tmp/tls-results.json | jq --slurp -r '.[]? | select(.certificateChain[]?.subject | test("{fqdn}")) | .ip | @text' > /home/ars0n/tmp/tls_filtered.tmp"""], shell=True)
+subprocess.run([f"""cat /tmp/tls-results.json | jq --slurp -r '.[]? | select(.certificateChain[]?.subject | test("{fqdn}")) | .ip | @text' > /tmp/tls_filtered.tmp"""], shell=True)
 print(f"[+] Successfully parsed tls-scan results!")
 now = datetime.now().strftime("%d-%m-%y_%I%p")
-results_str = subprocess.run([f"cat /home/ars0n/tmp/tls_filtered.tmp"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
+results_str = subprocess.run([f"cat /tmp/tls_filtered.tmp"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
 results_arr = results_str.stdout.split("\n")
 directory_check = subprocess.run([f"ls {home_dir}/Reports"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
 if directory_check.returncode == 0:
@@ -90,9 +90,9 @@ else:
 print(f"[-] Running final NMap scan on identified targets...")
 subprocess.run([f"rm -rf {home_dir}/Reports/ClearSky_{fqdn}_*"], shell=True)
 if len(results_arr) < 10:
-    subprocess.run([f"nmap -T 4 -iL /home/ars0n/tmp/tls_filtered.tmp -Pn --script=http-title -p- --open > {home_dir}/Reports/ClearSky_{fqdn}_{now}"], shell=True)
+    subprocess.run([f"nmap -T 4 -iL /tmp/tls_filtered.tmp -Pn --script=http-title -p- --open > {home_dir}/Reports/ClearSky_{fqdn}_{now}"], shell=True)
 else:
-    subprocess.run([f"nmap -T 4 -iL /home/ars0n/tmp/tls_filtered.tmp -Pn --script=http-title --top-ports 100 --open > {home_dir}/Reports/ClearSky_{fqdn}_{now}"], shell=True)
+    subprocess.run([f"nmap -T 4 -iL /tmp/tls_filtered.tmp -Pn --script=http-title --top-ports 100 --open > {home_dir}/Reports/ClearSky_{fqdn}_{now}"], shell=True)
 print(f"[+] NMap scan completed successfully!  A report has been created in the ~/Reports directory")
 
 print(f"[-] Updating database...")

@@ -19,7 +19,7 @@ const Slackbot = props => {
                     <Toaster />
                     <p><b>DETAILS: </b>Sublert is a security and reconnaissance tool which leverages certificate transparency to automatically monitor new subdomains deployed by specific organizations and issued TLS/SSL certificate.</p>
                     <p><b>GOAL: </b>Configure a Virtual Private Server (VPS) to notify, via Slack, when an organization is issued a new TLS/SSL certificate.</p>
-                    <p><b>DOWNLOAD / INSTALL: </b><span onClick={notify}> git clone https://github.com/yassineaboukir/sublert.git && cd sublert;  pip3 install virtualenv setuptools; virtualenv sublert; source sublert/bin/activate;  pip3 install -r requirements.txt;</span></p>
+                    <p><b>DOWNLOAD / INSTALL: </b><span onClick={notify}>sudo git clone https://github.com/yassineaboukir/sublert.git && cd sublert; sudo pip3 install virtualenv setuptools; virtualenv sublert; source sublert/bin/activate; sudo pip3 install -r requirements.txt;</span></p>
                     <p><b>RUN: </b> Detailed information on configuring Slack and Cron to run this tool can be found <a href="https://medium.com/@yassineaboukir/automated-monitoring-of-subdomains-for-fun-and-profit-release-of-sublert-634cfc5d7708" target="_blank" rel="noreferrer">here</a></p>
                 </div>
             </div>

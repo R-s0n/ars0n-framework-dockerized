@@ -1,8 +1,9 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-mongoose.connect('mongodb://ars0n-mongodb/wapt_db', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
-    .then(()=>console.log("Database connection established..."))
-    .catch(err=>console.log("ERROR: ", err));
+mongoose
+	.connect("mongodb://mongodb-server:27017/wapt_db", {
+		useNewUrlParser: true,
+		useUnifiedTopology: true,
+	})
+	.then(() => console.log("Database connection established..."))
+	.catch((err) => console.log("ERROR: ", err));
